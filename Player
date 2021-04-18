@@ -1,0 +1,128 @@
+package Classes;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+
+public class Player{
+    private static int NUM_OF_STATS = 7;
+    private List<Character> characters;
+    private String pathID;
+
+    public  Player(String name) {
+        characters = new ArrayList<Character>();
+        pathID = "Character List " + name + ".txt";
+        loadCharacters();
+
+    }
+
+    public void addCharacter(String id, int lvl, int exp, double atk, double def, double spd, double hp) {
+        characters.add(new Character(id, lvl, exp, atk, def, spd, hp));
+        saveCharacters();
+    }
+
+    public void deleteCharacter(String ID) {
+        for(int i = 0; i < characters.size(); i++) {
+            if(characters.get(i).getName().equals(ID)) {
+                characters.remove(i);
+                saveCharacters();
+                return;
+            }
+        }
+    }
+
+    public void printCharacters() {
+        for(Character c : characters) {
+            System.out.println("********************************");
+            System.out.println(c.toString());
+            System.out.println("********************************");
+        }
+    }
+
+    private void saveCharacters() {
+        try {
+            // open/create file
+            File myObj = new File(pathID);
+            if(myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists: " + myObj.getName());
+            }
+
+            // write to file
+            FileWriter myWriter = new FileWriter(pathID);
+            myWriter.write("Number of Characters: " + characters.size() + "\n");
+            for(Character c : characters) {
+                myWriter.write(c.toString());
+            }
+            myWriter.close();
+
+            System.out.println("Successfully wrote to the file.");
+        } catch(IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    private void loadCharacters() {
+        try {
+            File myObj = new File(pathID);
+            if(!myObj.exists()) {
+                saveCharacters();
+                return;
+            }
+            Scanner myReader = new Scanner(myObj);
+            int numEntries = 0;
+            if(myReader.hasNextLine()) {
+                String tempData = myReader.nextLine();
+                numEntries = Integer.parseInt(tempData.substring(tempData.length() - 1));
+
+            }
+            while (myReader.hasNextLine()) {
+
+                String data;
+                String id = "";
+                int level = 0, exp = 0;
+                double hp = 0, atk = 0, def = 0, spd = 0;
+
+                for(int i = 0; i < NUM_OF_STATS; i++) {
+                    data = myReader.nextLine();
+                    switch (data.substring(0, 2)) {
+                        case "ID":
+                            id = data.substring(data.indexOf(": ") + 2);
+                            break;
+                        case "Le":
+                            level = Integer.parseInt(data.substring(data.indexOf(": ") + 2));
+                            break;
+                        case "Ex":
+                            exp = Integer.parseInt(data.substring(data.indexOf(": ") + 2, data.indexOf("/")));
+                            break;
+                        case "HP":
+                            hp = Double.parseDouble(data.substring(data.indexOf(": ") + 2));
+                            break;
+                        case "At":
+                            atk = Double.parseDouble(data.substring(data.indexOf(": ") + 2));
+                            break;
+                        case "De":
+                            def = Double.parseDouble(data.substring(data.indexOf(": ") + 2));
+                            break;
+                        case "Sp":
+                            spd = Double.parseDouble(data.substring(data.indexOf(": ") + 2));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                addCharacter(id, level, exp, def, atk, spd, hp);
+            }
+            myReader.close();
+            System.out.println("Save loaded " + numEntries + " characters successfully.");
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+}
