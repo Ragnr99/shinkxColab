@@ -1,0 +1,82 @@
+package Classes;
+
+public class Character {
+    private String id;
+    private int level;
+    private int exp;
+    private double atk, def, spd, hp;
+
+
+    //
+    // Constructor
+    public Character() {
+        id = "NULL";
+        resetStats();
+    }
+    public Character(String id) {
+        this.id = id;
+        resetStats();
+    }
+    public Character(String id, int level, int exp, double atk, double def, double spd, double hp) {
+        this.id = id;
+        this.level = level;
+        this.exp = exp;
+        this.atk = atk;
+        this.def = def;
+        this.spd = spd;
+        this.hp = hp;
+    }
+
+    //
+    // Getters/Setters
+    public String getName() {
+        return id;
+    }
+    public void setName(String id) {
+        this.id = id;
+    }
+
+    //
+    // Functions
+    public void gainExp(int exp) {
+        this.exp += exp;
+
+        // Handle if multiple levels are gained at a time
+        while(this.exp >= 100) {
+            if (this.exp == 100) {
+                this.exp = 0;
+                levelUp();
+            } else if (this.exp > 100) {
+                this.exp -= 100;
+                levelUp();
+            }
+        }
+    }
+    private void levelUp() {
+        level += 1;
+        atk += atk/level;
+        def += def/level;
+        spd += spd/level;
+        hp += hp/level;
+    }
+    private void resetStats() {
+        level = 1;
+        exp = 0;
+        atk = 1;
+        def = 1;
+        spd = 1;
+        hp = 10;
+    }
+
+    // Display Stats
+    public String toString() {
+        return "ID: " + id
+                + "\nLevel: " + level
+                + "\nExp: " + exp + "/100"
+                + "\nHP: " + hp
+                + "\nAttack: " + atk
+                + "\nDefence: " + def
+                + "\nSpeed: " + spd
+                + "\n";
+    }
+}
